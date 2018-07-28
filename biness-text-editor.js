@@ -10,7 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 
-class BinessText extends PolymerElement {
+window.customElements.define('biness-text-editor', class extends PolymerElement {
   static get template() {
     return html`
         <style>
@@ -18,7 +18,7 @@ class BinessText extends PolymerElement {
                 outline: none;
             }
         </style>
-    <slot></slot>
+        <slot></slot>
     `;
   }
 
@@ -27,8 +27,7 @@ class BinessText extends PolymerElement {
       editable: {
         type: Boolean,
         reflectToAttribute: true,
-        value: false,
-        observer: '_canEditChanged'
+        value: false
       },
       value: {
         type: String,
@@ -38,25 +37,34 @@ class BinessText extends PolymerElement {
       },
       placeholder: {
         type: String,
-        value: 'Enter your text...'
+        value: 'Enter your text...',
+        reflectToAttribute: true
       },
     }
 
 
   }
 
+  static get observers(){
+    return [
+      '_editableChanged(editable)'
+    ]
+  }
+
   connectedCallback() {
     super.connectedCallback();
-    this.addEventListener('keydown', (e) => this._keydown(e));
+    
   }
 
   ready() {
+    super.ready();
     this.timeout = null;
-    this.innerHTML = !(!this.value && this.editable) ? this.value : this.placeholder;
+    this.innerHTML = (!this.value && this.editable) ? this.placeholder : this.value;
+    this.addEventListener('keydown', (e) => this._keydown(e));
   }
 
-  _canEditChanged(val) {
-    val ? this.setAttribute('contenteditable', '') : this.removeAttribute('contenteditable');
+  _editableChanged(val) {
+    (val) ? this.setAttribute('contenteditable', '') : this.removeAttribute('contenteditable');
   }
 
   _keydown(e) {
@@ -68,17 +76,14 @@ class BinessText extends PolymerElement {
 
     // Make a new timeout set to go off in 800ms
     this.timeout = setTimeout(() => {
-      
-      console.log(this.innerHTML);
-      console.log(this.value);
+      this.value = this.innerText;
+      this.htmlValue = this.innerHTML;
+
     }, 500);
   }
 
   constructor() {
     super();
-    this.contenteditable = true;
   }
 
-}
-
-window.customElements.define('biness-text', BinessText);
+});
