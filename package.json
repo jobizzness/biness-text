@@ -2,6 +2,7 @@
   "name": "biness-text-editor",
   "description": "Small text editor",
   "main": "biness-text-editor.js",
+  "version": "0.1.0",
   "dependencies": {
     "@polymer/polymer": "^3.0.0"
   },

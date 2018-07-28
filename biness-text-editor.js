@@ -33,7 +33,8 @@ window.customElements.define('biness-text-editor', class extends PolymerElement 
         type: String,
         reflectToAttribute: true,
         value: null,
-        notify: true
+        notify: true,
+        observer: '_valueChanged'
       },
       placeholder: {
         type: String,
@@ -45,7 +46,7 @@ window.customElements.define('biness-text-editor', class extends PolymerElement 
 
   }
 
-  static get observers(){
+  static get observers() {
     return [
       '_editableChanged(editable)'
     ]
@@ -53,13 +54,16 @@ window.customElements.define('biness-text-editor', class extends PolymerElement 
 
   connectedCallback() {
     super.connectedCallback();
-    
+
+  }
+
+  _valueChanged(val, old) {
+    this.innerHTML = (!this.value && this.editable) ? this.placeholder : this.value;
   }
 
   ready() {
     super.ready();
     this.timeout = null;
-    this.innerHTML = (!this.value && this.editable) ? this.placeholder : this.value;
     this.addEventListener('keydown', (e) => this._keydown(e));
   }
 
